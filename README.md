@@ -7,3 +7,5 @@ I wanted to browse Wikipedia in a similar manner to Andy Matuschak's
 just web-install
 just web-run
 ```
+
+![screenshot](./assets/screen1.png)

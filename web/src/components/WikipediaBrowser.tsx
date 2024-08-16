@@ -1,6 +1,6 @@
 "use client";
 
-import React, { memo, useCallback, useEffect, useState, useRef } from "react";
+import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import "./WikipediaBrowser.css";
 
 interface Pane {
@@ -47,9 +47,10 @@ const Resizer = memo(({ onResize }: { onResize: (delta: number) => void }) => {
   const startResizeX = useRef(0);
 
   const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
     startResizeX.current = e.clientX;
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
   };
 
   const handleMouseMove = (e: MouseEvent) => {
@@ -59,13 +60,13 @@ const Resizer = memo(({ onResize }: { onResize: (delta: number) => void }) => {
   };
 
   const handleMouseUp = () => {
-    document.removeEventListener('mousemove', handleMouseMove);
-    document.removeEventListener('mouseup', handleMouseUp);
+    document.removeEventListener("mousemove", handleMouseMove);
+    document.removeEventListener("mouseup", handleMouseUp);
   };
 
   return (
     <div
-      className="w-1 bg-gray-300 cursor-col-resize hover:bg-gray-400 transition-colors"
+      className="resizer w-1 bg-gray-300 cursor-col-resize hover:bg-gray-400 transition-colors absolute top-0 right-0 bottom-0"
       onMouseDown={handleMouseDown}
     />
   );
@@ -81,8 +82,8 @@ const PaneComponent = memo(({ pane, index, onClose, onClick, clickedLinks, onRes
   onResize: (index: number, delta: number) => void;
 }) => {
   return (
-    <>
-      <div className="flex-none h-full border-r border-gray-200 overflow-y-auto" style={{ width: pane.width }}>
+    <div className="pane-container relative flex-none h-full" style={{ width: pane.width }}>
+      <div className="h-full border-r border-gray-200 overflow-y-auto">
         <div className="flex justify-between items-center p-2 bg-gray-100 sticky top-0 z-10">
           <h2 className="text-sm font-bold truncate text-black">{pane.title}</h2>
           <button
@@ -112,7 +113,7 @@ const PaneComponent = memo(({ pane, index, onClose, onClick, clickedLinks, onRes
         />
       </div>
       <Resizer onResize={(delta) => onResize(index, delta)} />
-    </>
+    </div>
   );
 });
 PaneComponent.displayName = "PaneComponent";

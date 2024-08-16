@@ -4,7 +4,7 @@ name: Deploy Next.js site to Pages
 
 on:
   push:
-    branches: ["main"]
+    branches: [ "main" ]
   # allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -86,6 +86,9 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./web
     needs: build
     steps:
       - name: Deploy to GitHub Pages

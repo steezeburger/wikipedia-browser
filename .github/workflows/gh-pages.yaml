@@ -41,6 +41,7 @@ jobs:
         with:
           node-version: "lts/*"
           cache: ${{ steps.set-package-manager.outputs.manager }}
+          cache-dependency-path: "web"
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

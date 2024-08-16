@@ -8,7 +8,7 @@ generate-initial-web-env:
   cp web/.env.example web/.env
 
 # installs npm deps for web
-install-web-deps:
+web-install:
   cd web && npm install
 
 # builds the typescript for the front end app
@@ -17,5 +17,5 @@ build-web:
 
 # run front end app locally,
 # with file watching that triggers rebuilds
-run-web-local:
+web-run:
   cd web && npm run dev

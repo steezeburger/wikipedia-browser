@@ -73,16 +73,31 @@ const Resizer = memo(({ onResize }: { onResize: (delta: number) => void }) => {
 });
 Resizer.displayName = "Resizer";
 
-const PaneComponent = memo(({ pane, index, onClose, onClick, clickedLinks, onResize }: {
+const PaneComponent = memo(({ pane, index, onClose, onClick, clickedLinks, onResize, isFocused }: {
   pane: Pane;
   index: number;
   onClose: (index: number) => void;
   onClick: (e: React.MouseEvent<HTMLDivElement>, index: number) => void;
   clickedLinks: Set<string>;
   onResize: (index: number, delta: number) => void;
+  isFocused: boolean;
 }) => {
+  const paneRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isFocused && paneRef.current) {
+      paneRef.current.focus();
+      paneRef.current.scrollIntoView({ behavior: 'smooth', inline: 'start' });
+    }
+  }, [isFocused]);
+
   return (
-    <div className="pane-container relative flex-none h-full" style={{ width: pane.width }}>
+    <div
+      ref={paneRef}
+      className={`pane-container relative flex-none h-full ${isFocused ? 'focused' : ''}`}
+      style={{ width: pane.width }}
+      tabIndex={0}
+    >
       <div className="h-full border-r border-gray-200 overflow-y-auto">
         <div className="flex justify-between items-center p-2 bg-gray-100 sticky top-0 z-10">
           <h2 className="text-sm font-bold truncate text-black">{pane.title}</h2>
@@ -150,7 +165,6 @@ const WikipediaBrowser: React.FC = () => {
           setPanes([newPane]);
           setActivePane(0);
         } else {
-          // for subsequent panes, add to the right of the active pane
           setPanes(prevPanes => [
             ...prevPanes.slice(0, activePane + 1),
             newPane,
@@ -178,7 +192,12 @@ const WikipediaBrowser: React.FC = () => {
 
   const closePane = useCallback((index: number) => {
     setPanes(prevPanes => prevPanes.filter((_, i) => i !== index));
-    setActivePane(prevActivePane => prevActivePane > index ? prevActivePane - 1 : prevActivePane);
+    setActivePane(prevActivePane => {
+      if (prevActivePane >= index) {
+        return Math.max(0, prevActivePane - 1);
+      }
+      return prevActivePane;
+    });
   }, []);
 
   const handleResize = useCallback((index: number, delta: number) => {
@@ -205,6 +224,7 @@ const WikipediaBrowser: React.FC = () => {
             onClick={handleLinkClick}
             clickedLinks={clickedLinks}
             onResize={handleResize}
+            isFocused={index === activePane}
           />
         ))}
         {isLoading && (

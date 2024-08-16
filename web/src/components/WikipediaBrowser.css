@@ -71,3 +71,13 @@
   max-width: 100%;
   height: auto;
 }
+
+.pane-container:focus {
+  outline: none;
+}
+
+.pane-container.focused {
+  /* FIXME - this is meh */
+  box-shadow: 0 0 0 5px rgba(59, 130, 246, 0.5);
+}
+

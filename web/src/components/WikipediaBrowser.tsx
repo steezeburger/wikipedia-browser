@@ -6,11 +6,11 @@ import "./WikipediaBrowser.css";
 interface Pane {
   title: string;
   content: string;
-  isHomepage: boolean;
+  isSearchResult: boolean;
   width: number;
 }
 
-const SearchBar = memo(({ onSearch }: { onSearch: (term: string, isHomepage: boolean) => void }) => {
+const SearchBar = memo(({ onSearch }: { onSearch: (term: string, isSearchResult: boolean) => void }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -125,7 +125,7 @@ const WikipediaBrowser: React.FC = () => {
   const [clickedLinks, setClickedLinks] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    fetchWikipediaContent("Main Page", true);
+    fetchWikipediaContent("Main Page");
 
     // use wikipedia's stylesheet
     const link = document.createElement("link");
@@ -139,15 +139,14 @@ const WikipediaBrowser: React.FC = () => {
     };
   }, []);
 
-  const fetchWikipediaContent = useCallback(async (title: string, isHomepage: boolean = false) => {
+  const fetchWikipediaContent = useCallback(async (title: string, isSearchResult: boolean = false) => {
     setIsLoading(true);
     try {
       const response = await fetch(`https://en.wikipedia.org/w/api.php?action=parse&format=json&page=${encodeURIComponent(title)}&prop=text&formatversion=2&origin=*`);
       const data = await response.json();
       if (data.parse) {
-        const newPane = { title: data.parse.title, content: data.parse.text, isHomepage, width: 720 };
-        if (panes.length === 0 || (activePane === 0 && panes[0].isHomepage) || isHomepage) {
-          // For the first pane or updating the homepage, just set or update it
+        const newPane = { title: data.parse.title, content: data.parse.text, isSearchResult, width: 720 };
+        if (panes.length === 0 || isSearchResult) {
           setPanes([newPane]);
           setActivePane(0);
         } else {

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useCallback, memo } from "react";
+import React, { memo, useCallback, useEffect, useState } from "react";
 import "./WikipediaBrowser.css";
 
 interface Pane {
@@ -9,13 +9,13 @@ interface Pane {
   isHomepage: boolean;
 }
 
-const SearchBar = memo(({ onSearch }: { onSearch: (term: string) => void }) => {
+const SearchBar = memo(({ onSearch }: { onSearch: (term: string, isHomepage: boolean) => void }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchTerm.trim()) {
-      onSearch(searchTerm);
+      onSearch(searchTerm, true);
       setSearchTerm("");
     }
   };
@@ -52,18 +52,16 @@ const PaneComponent = memo(({ pane, index, onClose, onClick, clickedLinks }: {
     <div className="flex-none w-[45rem] h-full border-r border-gray-200 overflow-y-auto">
       <div className="flex justify-between items-center p-2 bg-gray-100 sticky top-0 z-10">
         <h2 className="text-sm font-bold truncate text-black">{pane.title}</h2>
-        {index > 0 && (
-          <button
-            onClick={() => onClose(index)}
-            className="p-1 hover:bg-gray-200 rounded-full transition-colors duration-200 text-black"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd"
-                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                    clipRule="evenodd" />
-            </svg>
-          </button>
-        )}
+        <button
+          onClick={() => onClose(index)}
+          className="p-1 hover:bg-gray-200 rounded-full transition-colors duration-200 text-black"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd"
+                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                  clipRule="evenodd" />
+          </svg>
+        </button>
       </div>
       <div
         className="wikipedia-content"
@@ -71,9 +69,9 @@ const PaneComponent = memo(({ pane, index, onClose, onClick, clickedLinks }: {
         dangerouslySetInnerHTML={{ __html: pane.content }}
         ref={(node) => {
           if (node) {
-            node.querySelectorAll('a').forEach(a => {
+            node.querySelectorAll("a").forEach(a => {
               if (clickedLinks.has(a.href)) {
-                a.classList.add('clicked-link');
+                a.classList.add("clicked-link");
               }
             });
           }
@@ -111,7 +109,7 @@ const WikipediaBrowser: React.FC = () => {
       const data = await response.json();
       if (data.parse) {
         const newPane = { title: data.parse.title, content: data.parse.text, isHomepage };
-        if (panes.length === 0 || (activePane === 0 && panes[0].isHomepage)) {
+        if (panes.length === 0 || (activePane === 0 && panes[0].isHomepage) || isHomepage) {
           // For the first pane or updating the homepage, just set or update it
           setPanes([newPane]);
           setActivePane(0);
@@ -137,14 +135,8 @@ const WikipediaBrowser: React.FC = () => {
     if (link instanceof HTMLAnchorElement && link.href && link.title) {
       e.preventDefault();
       setClickedLinks(prev => new Set(prev).add(link.href));
-      if (panes[paneIndex].isHomepage) {
-        // if it's the homepage, update the current pane
-        fetchWikipediaContent(link.title);
-      } else {
-        // otherwise, open in a new pane to the right
-        setActivePane(paneIndex);
-        fetchWikipediaContent(link.title);
-      }
+      setActivePane(paneIndex);
+      fetchWikipediaContent(link.title);
     }
   }, [panes, fetchWikipediaContent]);
 

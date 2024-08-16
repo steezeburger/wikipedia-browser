@@ -40,6 +40,7 @@ const SearchBar = memo(({ onSearch }: { onSearch: (term: string, isHomepage: boo
     </div>
   );
 });
+SearchBar.displayName = "SearchBar";
 
 const PaneComponent = memo(({ pane, index, onClose, onClick, clickedLinks }: {
   pane: Pane;
@@ -80,6 +81,7 @@ const PaneComponent = memo(({ pane, index, onClose, onClick, clickedLinks }: {
     </div>
   );
 });
+PaneComponent.displayName = "PaneComponent";
 
 const WikipediaBrowser: React.FC = () => {
   const [panes, setPanes] = useState<Pane[]>([]);

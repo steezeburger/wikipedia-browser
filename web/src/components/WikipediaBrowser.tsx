@@ -13,6 +13,7 @@ const WikipediaBrowser: React.FC = () => {
   const [panes, setPanes] = useState<Pane[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activePane, setActivePane] = useState(-1);
+  const [clickedLinks, setClickedLinks] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     fetchWikipediaContent("Main Page", true);
@@ -61,6 +62,7 @@ const WikipediaBrowser: React.FC = () => {
     const link = target.closest("a");
     if (link instanceof HTMLAnchorElement && link.href && link.title) {
       e.preventDefault();
+      setClickedLinks(prev => new Set(prev).add(link.href));
       if (panes[paneIndex].isHomepage) {
         // if it's the homepage, update the current pane
         fetchWikipediaContent(link.title);
@@ -100,6 +102,15 @@ const WikipediaBrowser: React.FC = () => {
             className="wikipedia-content"
             onClick={(e) => handleLinkClick(e, index)}
             dangerouslySetInnerHTML={{ __html: pane.content }}
+            ref={(node) => {
+              if (node) {
+                node.querySelectorAll('a').forEach(a => {
+                  if (clickedLinks.has(a.href)) {
+                    a.classList.add('clicked-link');
+                  }
+                });
+              }
+            }}
           />
         </div>
       ))}

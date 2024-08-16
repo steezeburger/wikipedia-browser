@@ -58,3 +58,11 @@
   padding: 0.2rem;
   font-size: 88%;
 }
+
+.wikipedia-content .clicked-link {
+  background-color: yellow;
+  font-weight: bold;
+  padding: 2px 4px;
+  border-radius: 3px;
+  text-decoration: none !important;
+}

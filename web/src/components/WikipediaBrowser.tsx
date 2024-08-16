@@ -1,7 +1,7 @@
-'use client'
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import './WikipediaBrowser.css';
+import React, { useEffect, useState } from "react";
+import "./WikipediaBrowser.css";
 
 interface Pane {
   title: string;
@@ -15,13 +15,13 @@ const WikipediaBrowser: React.FC = () => {
   const [activePane, setActivePane] = useState(-1);
 
   useEffect(() => {
-    fetchWikipediaContent('Main Page', true);
+    fetchWikipediaContent("Main Page", true);
 
     // use wikipedia's stylesheet
-    const link = document.createElement('link');
-    link.href = 'https://en.wikipedia.org/w/load.php?lang=en&modules=site.styles&only=styles&skin=vector';
-    link.rel = 'stylesheet';
-    link.type = 'text/css';
+    const link = document.createElement("link");
+    link.href = "https://en.wikipedia.org/w/load.php?lang=en&modules=site.styles&only=styles&skin=vector";
+    link.rel = "stylesheet";
+    link.type = "text/css";
     document.head.appendChild(link);
 
     return () => {
@@ -44,20 +44,21 @@ const WikipediaBrowser: React.FC = () => {
           // for subsequent panes, add to the right of the active pane
           setPanes(prevPanes => [
             ...prevPanes.slice(0, activePane + 1),
-            newPane
+            newPane,
           ]);
           setActivePane(prevActivePane => prevActivePane + 1);
         }
       }
     } catch (error) {
-      console.error('Error fetching Wikipedia content:', error);
+      console.error("Error fetching Wikipedia content:", error);
+      window.alert("Error fetching Wikipedia content :(");
     }
     setIsLoading(false);
   };
 
   const handleLinkClick = (e: React.MouseEvent<HTMLDivElement>, paneIndex: number) => {
     const target = e.target as HTMLElement;
-    const link = target.closest('a');
+    const link = target.closest("a");
     if (link instanceof HTMLAnchorElement && link.href && link.title) {
       e.preventDefault();
       if (panes[paneIndex].isHomepage) {
@@ -88,7 +89,9 @@ const WikipediaBrowser: React.FC = () => {
                 className="p-1 hover:bg-gray-200 rounded-full transition-colors duration-200 text-black"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                  <path fillRule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clipRule="evenodd" />
                 </svg>
               </button>
             )}

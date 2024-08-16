@@ -1,0 +1,60 @@
+.wikipedia-content {
+  padding: 1rem 2rem;
+  color: black;
+}
+
+.wikipedia-content h1,
+.wikipedia-content h2,
+.wikipedia-content h3,
+.wikipedia-content h4,
+.wikipedia-content h5,
+.wikipedia-content h6 {
+  border-bottom: 1px solid #a2a9b1;
+  padding-bottom: 0.25rem;
+  margin-top: 1.5rem;
+}
+
+.wikipedia-content a {
+  color: #0645ad;
+}
+
+.wikipedia-content a:visited {
+  color: #0b0080;
+}
+
+.wikipedia-content a:hover {
+  text-decoration: underline;
+}
+
+.wikipedia-content .mw-headline {
+  display: inline-block;
+  margin-top: 0.5rem;
+}
+
+.wikipedia-content table {
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+.wikipedia-content table,
+.wikipedia-content th,
+.wikipedia-content td {
+  border: 1px solid #a2a9b1;
+}
+
+.wikipedia-content th,
+.wikipedia-content td {
+  padding: 0.5rem;
+}
+
+.wikipedia-content .infobox {
+  float: right;
+  clear: right;
+  margin-left: 1rem;
+  margin-bottom: 1rem;
+  max-width: 22rem;
+  border: 1px solid #a2a9b1;
+  background-color: #f8f9fa;
+  padding: 0.2rem;
+  font-size: 88%;
+}

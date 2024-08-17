@@ -1,5 +1,3 @@
-"use client";
-
 import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import "./WikipediaBrowser.css";
 

@@ -54,11 +54,19 @@ const WikipediaBrowser: React.FC = () => {
   const handleLinkClick = useCallback((e: React.MouseEvent<HTMLDivElement>, paneIndex: number) => {
     const target = e.target as HTMLElement;
     const link = target.closest("a");
-    if (link instanceof HTMLAnchorElement && link.href && link.title) {
+    const image = target.closest("img")
+    if(image){
       e.preventDefault();
-      setClickedLinks(prev => new Set(prev).add(link.href));
-      setActivePane(paneIndex);
-      fetchWikipediaContent(link.title);
+      e.stopPropagation();
+      window.open(image.src, "_blank");
+    }else{
+      if (link instanceof HTMLAnchorElement && link.href && link.title) {
+        e.preventDefault();
+        e.stopPropagation()
+        setClickedLinks(prev => new Set(prev).add(link.href));
+        setActivePane(paneIndex);
+        fetchWikipediaContent(link.title);
+      }
     }
   }, [fetchWikipediaContent]);
 

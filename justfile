@@ -12,10 +12,14 @@ web-install:
   cd web && npm install
 
 # builds the typescript for the front end app
-build-web:
+web-build:
   cd web && npm run build
 
 # run front end app locally,
 # with file watching that triggers rebuilds
 web-run:
   cd web && npm run dev
+
+# lint the front end app
+web-lint:
+  cd web && npm run lint

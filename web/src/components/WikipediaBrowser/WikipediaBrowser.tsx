@@ -55,11 +55,11 @@ const WikipediaBrowser: React.FC = () => {
     const target = e.target as HTMLElement;
     const link = target.closest("a");
     const image = target.closest("img")
-    if(image){
+    if ( image ) {
       e.preventDefault();
       e.stopPropagation();
       window.open(image.src, "_blank");
-    }else{
+    } else {
       if (link instanceof HTMLAnchorElement && link.href && link.title) {
         e.preventDefault();
         e.stopPropagation()

@@ -60,7 +60,11 @@ const WikipediaBrowser: React.FC = () => {
       e.stopPropagation();
       window.open(image.src, "_blank");
     } else {
-      if (link instanceof HTMLAnchorElement && link.href && link.title) {
+      if (link?.classList[0] === 'extiw'){
+        e.preventDefault();
+        e.stopPropagation()
+        window.open(link.href,"_blank")
+      } else if (link instanceof HTMLAnchorElement && link.href && link.title) {
         e.preventDefault();
         e.stopPropagation()
         setClickedLinks(prev => new Set(prev).add(link.href));

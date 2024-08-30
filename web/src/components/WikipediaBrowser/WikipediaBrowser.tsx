@@ -15,7 +15,8 @@ const WikipediaBrowser: React.FC = () => {
 
     // use wikipedia's stylesheet
     const link = document.createElement("link");
-    link.href = "https://en.wikipedia.org/w/load.php?lang=en&modules=site.styles&only=styles&skin=vector";
+    link.href =
+      "https://en.wikipedia.org/w/load.php?lang=en&modules=site.styles&only=styles&skin=vector";
     link.rel = "stylesheet";
     link.type = "text/css";
     document.head.appendChild(link);
@@ -23,56 +24,81 @@ const WikipediaBrowser: React.FC = () => {
     return () => {
       document.head.removeChild(link);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const fetchWikipediaContent = useCallback(async (title: string, isSearchResult: boolean = false) => {
-    setIsLoading(true);
-    try {
-      const response = await fetch(`https://en.wikipedia.org/w/api.php?action=parse&format=json&page=${encodeURIComponent(title)}&prop=text&formatversion=2&origin=*`);
-      const data = await response.json();
-      if (data.parse) {
-        const newPane = { title: data.parse.title, content: data.parse.text, isSearchResult, width: 720 };
-        if (panes.length === 0 || isSearchResult) {
-          setPanes([newPane]);
-          setActivePane(0);
-        } else {
-          setPanes(prevPanes => [
-            ...prevPanes.slice(0, activePane + 1),
-            newPane,
-          ]);
-          setActivePane(prevActivePane => prevActivePane + 1);
+  const fetchWikipediaContent = useCallback(
+    async (title: string, isSearchResult: boolean = false) => {
+      setIsLoading(true);
+      try {
+        const response = await fetch(
+          `https://en.wikipedia.org/w/api.php?action=parse&format=json&page=${encodeURIComponent(
+            title
+          )}&prop=text&formatversion=2&origin=*`
+        );
+        const data = await response.json();
+        if (data.parse) {
+          const newPane = {
+            title: data.parse.title,
+            content: data.parse.text,
+            isSearchResult,
+            width: 720,
+          };
+          if (panes.length === 0 || isSearchResult) {
+            setPanes([newPane]);
+            setActivePane(0);
+          } else {
+            setPanes((prevPanes) => [
+              ...prevPanes.slice(0, activePane + 1),
+              newPane,
+            ]);
+            setActivePane((prevActivePane) => prevActivePane + 1);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching Wikipedia content:", error);
+        window.alert("Error fetching Wikipedia content :(");
+      }
+      setIsLoading(false);
+    },
+    [panes, activePane]
+  );
+
+  const handleLinkClick = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>, paneIndex: number) => {
+      const target = e.target as HTMLElement;
+      const link = target.closest("a");
+      const image = target.closest("img");
+      if (image) {
+        e.preventDefault();
+        e.stopPropagation();
+        window.open(image.src, " _blank");
+      } else {
+        // The extiw class name in Wikipedia is used to style links that point to sister projects of Wikipedia, such as Wiktionary, Wikiquote, Wikibooks, etc.
+        // When a link is formatted with this class, it often signifies that clicking the link will take the user to a related page on one of these sister sites.
+        if (link?.classList[0] === "extiw") {
+          e.preventDefault();
+          e.stopPropagation();
+          window.open(link.href, "_blank");
+        } else if (
+          link instanceof HTMLAnchorElement &&
+          link.href &&
+          link.title
+        ) {
+          e.preventDefault();
+          e.stopPropagation();
+          setClickedLinks((prev) => new Set(prev).add(link.href));
+          setActivePane(paneIndex);
+          fetchWikipediaContent(link.title);
         }
       }
-    } catch (error) {
-      console.error("Error fetching Wikipedia content:", error);
-      window.alert("Error fetching Wikipedia content :(");
-    }
-    setIsLoading(false);
-  }, [panes, activePane]);
-
-  const handleLinkClick = useCallback((e: React.MouseEvent<HTMLDivElement>, paneIndex: number) => {
-    const target = e.target as HTMLElement;
-    const link = target.closest("a");
-    const image = target.closest("img")
-    if ( image ) {
-      e.preventDefault();
-      e.stopPropagation();
-      window.open(image.src, "_blank");
-    } else {
-      if (link instanceof HTMLAnchorElement && link.href && link.title) {
-        e.preventDefault();
-        e.stopPropagation()
-        setClickedLinks(prev => new Set(prev).add(link.href));
-        setActivePane(paneIndex);
-        fetchWikipediaContent(link.title);
-      }
-    }
-  }, [fetchWikipediaContent]);
+    },
+    [fetchWikipediaContent]
+  );
 
   const closePane = useCallback((index: number) => {
-    setPanes(prevPanes => prevPanes.filter((_, i) => i !== index));
-    setActivePane(prevActivePane => {
+    setPanes((prevPanes) => prevPanes.filter((_, i) => i !== index));
+    setActivePane((prevActivePane) => {
       if (prevActivePane >= index) {
         return Math.max(0, prevActivePane - 1);
       }
@@ -81,11 +107,17 @@ const WikipediaBrowser: React.FC = () => {
   }, []);
 
   const handleResize = useCallback((index: number, delta: number) => {
-    setPanes(prevPanes => {
+    setPanes((prevPanes) => {
       const newPanes = [...prevPanes];
-      newPanes[index] = { ...newPanes[index], width: Math.max(200, newPanes[index].width + delta) };
+      newPanes[index] = {
+        ...newPanes[index],
+        width: Math.max(200, newPanes[index].width + delta),
+      };
       if (index < newPanes.length - 1) {
-        newPanes[index + 1] = { ...newPanes[index + 1], width: Math.max(200, newPanes[index + 1].width - delta) };
+        newPanes[index + 1] = {
+          ...newPanes[index + 1],
+          width: Math.max(200, newPanes[index + 1].width - delta),
+        };
       }
       return newPanes;
     });
